@@ -1,0 +1,13 @@
+ARG FROM_IMAGE
+ARG FROM_TAG
+FROM ${FROM_IMAGE}:${FROM_TAG}
+
+ARG MAINTAINER
+
+LABEL MAINTAINER=${MAINTAINER}
+
+RUN yum install -y yum-utils device-mapper-persistent-data lvm2 net-tools; \
+    yum install -y wget; \
+    mkdir /work ;
+
+CMD ["/usr/sbin/init"]

@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  base_centos:
+    image: "base_centos:${BASE_CENTOS_VERSION}"
+    build:
+      context: ./base_centos
+      args:
+        FROM_IMAGE: ${FROM_CENTOS_IMAGE}
+        FROM_TAG: ${FROM_CENTOS_TAG}
+        MAINTAINER: ${MAINTAINER}
+
+  base_alpine:
+    image: "base_alpine:${BASE_ALPINE_VERSION}"
+    build:
+      context: ./base_alpine
+      args:
+        FROM_IMAGE: ${FROM_ALPINE_IMAGE}
+        FROM_TAG: ${FROM_ALPINE_TAG}
+        MAINTAINER: ${MAINTAINER}
+
+  cassandra_centos:
+    depends_on:
+      - base_centos
+    image: "cassandra_centos:${CASSANDRA_CENTOS_VERSION}"
+    build:
+      context: ./cassandra_centos
+      args:
+        FROM_IMAGE: base_centos
+        FROM_TAG: ${BASE_CENTOS_VERSION}
+        MAINTAINER: ${MAINTAINER}
+        CASSANDRA_CENTOS_VERSION: ${CASSANDRA_CENTOS_VERSION}
+        CASSANDRA_CENTOS_HOME: ${CASSANDRA_CENTOS_HOME}
+
+  cassandra_alpine:
+    depends_on:
+      - base_alpine
+    image: "cassandra_alpine:${CASSANDRA_ALPINE_VERSION}"
+    build:
+      context: ./cassandra_alpine
+      args:
+        FROM_IMAGE: base_alpine
+        FROM_TAG: ${BASE_ALPINE_VERSION}
+        MAINTAINER: ${MAINTAINER}
+        CASSANDRA_ALPINE_VERSION: ${CASSANDRA_ALPINE_VERSION}
+        CASSANDRA_ALPINE_HOME: ${CASSANDRA_ALPINE_HOME}

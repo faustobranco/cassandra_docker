@@ -1,0 +1,15 @@
+ARG FROM_IMAGE
+ARG FROM_TAG
+FROM ${FROM_IMAGE}:${FROM_TAG}
+
+ARG MAINTAINER
+LABEL MAINTAINER=${MAINTAINER}
+
+USER root
+
+RUN apk update; \
+    apk add python2; \
+    apk add --no-cache openjdk8-jre-base py-pip; \
+    mkdir /work ;
+
+CMD ["/bin/sh"]

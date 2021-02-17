@@ -1,0 +1,34 @@
+ARG FROM_IMAGE
+ARG FROM_TAG
+FROM ${FROM_IMAGE}:${FROM_TAG}
+
+ARG MAINTAINER
+ARG CASSANDRA_ALPINE_HOME
+ARG CASSANDRA_ALPINE_VERSION
+ENV CASSANDRA_CONFIG $CASSANDRA_ALPINE_HOME/conf
+
+LABEL MAINTAINER=${MAINTAINER}
+
+USER root
+
+WORKDIR /
+
+COPY docker-entrypoint.sh /
+
+RUN mkdir -p /work; \
+    wget https://archive.apache.org/dist/cassandra/${CASSANDRA_ALPINE_VERSION}/apache-cassandra-${CASSANDRA_ALPINE_VERSION}-bin.tar.gz -O /work/cassandra.tar.gz ; \
+    tar zxf /work/cassandra.tar.gz ; \
+    rm -fv  /work/cassandra.tar.gz ; \
+    mv apache-cassandra-$CASSANDRA_ALPINE_VERSION $CASSANDRA_ALPINE_HOME ;\
+    sed -i 's|\$CASSANDRA_HOME/logs|/var/log/cassandra|' $CASSANDRA_ALPINE_HOME/conf/cassandra-env.sh; \
+    chmod a+x /docker-entrypoint.sh
+
+RUN mkdir /var/log/cassandra
+RUN mkdir -p $CASSANDRA_ALPINE_HOME/data/commitlog $CASSANDRA_ALPINE_HOME/data/data $CASSANDRA_ALPINE_HOME/data/hints $CASSANDRA_ALPINE_HOME/data/saved_caches
+
+ENV PATH $PATH:$CASSANDRA_ALPINE_HOME/bin
+
+EXPOSE 7000 7001 7199 9042 9160
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD [ "cassandra", "-Rf" ]
